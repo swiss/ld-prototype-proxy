@@ -1,0 +1,37 @@
+{
+  "name": "ld-prototype-proxy",
+  "version": "0.1",
+  "description": "Authorization Proxy for SPARQL Endpoints",
+  "main": "index.js",
+  "type": "module",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "proxy-ewr": "node ./main.js ../config/ewr/ -p 3000",
+    "proxy-upi": "node ./main.js ../config/upi/ -p 3001"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.ti.bfh.ch/ictm-iam/bk-iam-linked-data/sparql-auth-proxy"
+  },
+  "keywords": [
+    "sparql",
+    "proxy",
+    "authorization"
+  ],
+  "author": "Alain Rohrbach (alain.rohrbach@bfh.ch)",
+  "license": "ISC",
+  "dependencies": {
+    "@rdfjs/data-model": "^2.0.2",
+    "body-parser": "^1.20.2",
+    "commander": "^12.1.0",
+    "cors": "^2.8.5",
+    "debug": "^4.3.5",
+    "express": "^4.19.2",
+    "express-basic-auth": "^1.2.1",
+    "jsonschema": "^1.4.1",
+    "oxigraph": "^0.4.0-alpha.7",
+    "sparql-http-client": "^3.0.0"
+  }
+}
