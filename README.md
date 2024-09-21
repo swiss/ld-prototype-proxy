@@ -45,9 +45,15 @@ npm run proxy-upi
 * Additionally the proxy provides a web interface under `http://localhost:3000/`
   to issue SPARQL requests to itself.
 
-> [!NOTE]
-> The current version of the proxy does not yet authenticate users. All request
-> are processed for the default user and yield appropriate results.
+#### Authentication & Authorization
+
+The current version of the proxy does not yet feature any authentication methods.
+
+For demonstration purposes a user's role can be provided directly in the following two ways.
+
+1. By specifying a default role on start-up with the `--role` option.  
+   e.g. `node ../config/upi --port 3001 --role admin`
+2. By specifying the `role` header of the request.
 
 ### Logging
 
