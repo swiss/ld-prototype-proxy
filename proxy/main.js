@@ -115,7 +115,7 @@ app.use('/sparql', async (req, res) => {
     
     // extract user and formulate intent
     // TODO: identify role
-    const user = req.auth?.user || req.query.role || defaultRole;
+    const user = req.auth?.user || req.headers.role || defaultRole;
     log(`identified user role: ${user}`);
     
     const intent = { role: user, queryString: query };
