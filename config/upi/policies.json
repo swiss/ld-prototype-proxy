@@ -3,5 +3,17 @@
         "role": null,
         "permission": "allow",
         "priority": 0
+    },
+    {
+        "role": null,
+        "permission": "deny",
+        "predicate": "foaf:givenName",
+        "priority": 1
+    },
+    {
+        "role": "admin",
+        "permission": "allow",
+        "predicate": "foaf:givenName",
+        "priority": 2
     }
 ]
