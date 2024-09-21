@@ -49,7 +49,7 @@ export class IntentProcessor {
         const filtered = this.policyProvider.filterPolicies(intent.role);
         const constructQuery = allowedDataQuery(filtered, this.prefixes);
 
-        log('%O', constructQuery);
+        log(constructQuery);
         log('creating temporal graph from %o', this.client.endpointUrl);
 
         const res = await this.client.postUrlencoded(constructQuery);

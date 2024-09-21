@@ -10,6 +10,7 @@ import { Validator } from 'jsonschema';
 
 import { IntentProcessor } from './src/intent-processor.js';
 import { PolicyProvider } from './src/policy-provider.js';
+import { inspect } from 'node:util';
 
 
 // Setup logger
@@ -22,11 +23,13 @@ const log = debug('proxy:server');
 program
     .argument('<configPath>', 'path to the configuration')
     .option('-p, --port <number>', 'port number', 3000)
+    .option('-r, --role <string>', 'default role', null)
     .parse(process.argv);
 
 const configPath = program.args[0];
 const options = program.opts();
 const port = options.port;
+const defaultRole = options.role;
 
 const config = JSON.parse(fs.readFileSync(path.join(configPath, 'config.json')));
 const policies = JSON.parse(fs.readFileSync(path.join(configPath, 'policies.json')));
@@ -112,14 +115,16 @@ app.use('/sparql', async (req, res) => {
     
     // extract user and formulate intent
     // TODO: identify role
-    const user = req.auth?.user || null;
+    const user = req.auth?.user || req.query.role || defaultRole;
+    log(`identified user role: ${user}`);
+    
     const intent = { role: user, queryString: query };
 
     // execute intent
     try {
         const result = await intentProcessor.process(intent);
         log('returning query results!');
-        log('%O', JSON.parse(result));
+        log(inspect(JSON.parse(result), { colors: true, depth: null, maxArrayLength: 5, compact: true }));
         return res.status(200).contentType('application/json').send(result);
     }
     catch (ex) {
@@ -160,4 +165,5 @@ app.get('/', (req, res) => {
 
 app.listen(port, () => {
     log(`listening on port: ${port}`);
+    log(`default role is: ${defaultRole}`);
 });

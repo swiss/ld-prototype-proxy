@@ -9,7 +9,8 @@
   },
   "scripts": {
     "proxy-ewr": "node ./main.js ../config/ewr/ -p 3000",
-    "proxy-upi": "node ./main.js ../config/upi/ -p 3001"
+    "proxy-upi": "node ./main.js ../config/upi/ -p 3001",
+    "proxy-upi-admin": "node ./main.js ../config/upi/ -p 3001 -r admin"
   },
   "repository": {
     "type": "git",
