@@ -1,6 +1,7 @@
 import './types.js'
 
 const DELIMITER = '\n';
+const INDENT = 2;
 
 /**
  * Creates a construct query based on the given policies.
@@ -11,7 +12,7 @@ export function allowedDataQuery(policies, prefixes) {
 
     const tree = createPolicyTree(policies);
     const pattern = tree.stringify();
-    return [ ...stringifyPrefixes(prefixes), 'CONSTRUCT { ?s ?p ?o. } WHERE', '{', pattern, '}' ].join(DELIMITER);
+    return [ ...stringifyPrefixes(prefixes), 'CONSTRUCT { ?s ?p ?o. } WHERE', '{', indentString(pattern, INDENT), '}' ].join(DELIMITER);
 
 }
 
@@ -121,7 +122,7 @@ class UnionElement extends QueryElement {
     stringify() {
         if (this.children.length > 1) {
             return this.children.map(it => 
-                [ '{', it.stringify(), '}' ].join(DELIMITER))
+                [ '{', indentString(it.stringify(), INDENT), '}' ].join(DELIMITER))
                 .join(DELIMITER + 'UNION' + DELIMITER);
         }
         else {
@@ -144,8 +145,12 @@ class MinusElement extends QueryElement {
     }
 
     stringify() {
-        const lhs = this.lhs.stringify();
-        const rhs = this.rhs.stringify();
+        const lhs = indentString(this.lhs.stringify(), INDENT);
+        const rhs = indentString(this.rhs.stringify(), INDENT);
         return [ '{', lhs, '}', 'MINUS', '{', rhs, '}' ].join(DELIMITER);
     }
+}
+
+function indentString(str, count, indent = " ") {
+    return str.replace(/^/gm, indent.repeat(count));
 }
