@@ -1,7 +1,10 @@
 import './types.js'
+import debug from 'debug';
 
 const DELIMITER = '\n';
-const INDENT = 2;
+const INDENT   = 2;
+
+const log = debug("proxy:transformer");
 
 /**
  * Creates a construct query based on the given policies.
@@ -10,9 +13,35 @@ const INDENT = 2;
  */
 export function allowedDataQuery(policies, prefixes) {
 
-    const tree = createPolicyTree(policies);
+    if (!policies.every(it => it.isNormalized))
+        throw new Error('policies must be normalized');
+
+
+    // reduce policies that share the same pattern (i.e. operate on the same triples) to the one with the highest priority.
+    // - this eliminates *some* redundant operations from the query.
+    // - this step is optional
+
+    const groups = group(policies, (a, b) => {
+        return arrayEquals(a.subject, b.subject) 
+        && arrayEquals(a.predicate, b.predicate)
+        && arrayEquals(a.object, b.object); 
+    });
+    const reduced = groups.map(group => 
+        group.reduce((max, it) => it.priority > max.priority ? it : max));
+        
+    log("reduced policies:");
+    log("%O", reduced);
+
+
+    // create allowed data query from policy tree
+
+    const tree = createPolicyTree(reduced);
     const pattern = tree.stringify();
-    return [ ...stringifyPrefixes(prefixes), 'CONSTRUCT { ?s ?p ?o. } WHERE', '{', indentString(pattern, INDENT), '}' ].join(DELIMITER);
+    return [ 
+        ...stringifyPrefixes(prefixes), 
+        'CONSTRUCT { ?s ?p ?o. } WHERE', 
+        '{', indentString(pattern, INDENT), '}' 
+    ].join(DELIMITER);
 
 }
 
@@ -86,14 +115,8 @@ class PatternElement extends QueryElement {
 
     stringify() {
         const values = function(variable, values) {
-            if (values === undefined)
+            if (values.length === 0)
                 return null;
-            if (values === null)
-                return null;
-            if (values === '*')
-                return null;
-            if (!Array.isArray(values))
-                values = [values];
             return `VALUES ${variable} { ${values.join(' ')} }`;
         }
 
@@ -153,4 +176,39 @@ class MinusElement extends QueryElement {
 
 function indentString(str, count, indent = " ") {
     return str.replace(/^/gm, indent.repeat(count));
+}
+
+/**
+ * Group a collection of items according to an equality comparer.
+ * @template T
+ * @param { [T] } items a collection of items
+ * @param { (a: T, b: T) => boolean } eq an equality comparer
+ * @returns { [[T]] }
+ */
+function group(items, eq) {
+    const groups = [ ];
+    if (items.length < 1)
+        return groups;
+
+    for (const item of items)
+    {
+        const group = groups.find(it => eq(item, it[0]));
+        if (group) 
+            group.push(item); 
+        else 
+            groups.push([item]);
+    }
+
+    return groups;
+}
+
+/**
+ * Compare the content of two arrays
+ * @param {*} a 
+ * @param {*} b 
+ */
+function arrayEquals(a, b) {
+    if (a.length != b.length)
+        return;
+    return a.every((it, idx) => it === b[idx]);
 }

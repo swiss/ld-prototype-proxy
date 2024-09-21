@@ -7,9 +7,7 @@ export class PolicyProvider
      * @param { [Policy] } policies 
      */
     constructor(policies) {
-        if (!validate(policies))
-            throw new Error('Invalid policies');
-        this.policies = policies;
+        this.policies = policies.map(it => normalizePolicy(it));
     }
 
     /**
@@ -23,9 +21,31 @@ export class PolicyProvider
 
 /**
  * 
- * @param { [Policy] } policies 
- * @returns 
+ * @param { Policy } policy 
+ * @return { Policy }
  */
-function validate(policies) {
-    return true;
+function normalizePolicy(policy) {
+    return {
+        permission: policy.permission,
+        role: policy.role,
+        graph: policy.graph,
+        priority: policy.priority,
+        subject: normalizeValues(policy.subject),
+        predicate: normalizeValues(policy.predicate),
+        object: normalizeValues(policy.object),
+        isNormalized: true,
+    }
+}
+
+/**
+ * 
+ * @param { string | [string] | '*' | null } values 
+ * @returns { [string] | null }
+ */
+function normalizeValues(values) {
+    if (values === undefined || values === null || values === '*')
+        values = [];
+    if (!Array.isArray(values))
+        values = [values];
+    return values.sort();
 }
