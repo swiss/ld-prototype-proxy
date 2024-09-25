@@ -1,7 +1,6 @@
 import './types.js'
 import debug from 'debug';
 import oxigraph from 'oxigraph';
-import { PolicyProvider } from './policy-provider.js';
 import { SimpleClient } from 'sparql-http-client';
 import { allowedDataQuery } from './policy-transformer.js';
 

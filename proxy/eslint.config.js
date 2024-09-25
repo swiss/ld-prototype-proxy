@@ -9,5 +9,5 @@ export default [
   {
     languageOptions: { globals: globals.node }
   },
-  pluginJs.configs.all,
+  pluginJs.configs.recommended,
 ];

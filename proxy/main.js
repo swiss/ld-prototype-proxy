@@ -4,12 +4,11 @@ import cors from 'cors';
 import debug from 'debug';
 import express from 'express';
 import bodyParser from 'body-parser';
+import { inspect } from 'node:util';
 import { program } from 'commander';
 import { Validator } from 'jsonschema';
-
 import { IntentProcessor } from './src/intent-processor.js';
 import { PolicyProvider } from './src/policy-provider.js';
-import { inspect } from 'node:util';
 
 
 // Setup logger
