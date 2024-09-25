@@ -3,7 +3,6 @@ import path from 'node:path';
 import cors from 'cors';
 import debug from 'debug';
 import express from 'express';
-import basicAuth from 'express-basic-auth';
 import bodyParser from 'body-parser';
 import { program } from 'commander';
 import { Validator } from 'jsonschema';
@@ -84,6 +83,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.text());
 app.use(bodyParser.urlencoded());
+app.use(express.static('public'))
 
 
 // Serve SPARQL endpoint
@@ -139,19 +139,26 @@ app.get('/', (req, res) => {
     res.send(`
         <html lang="en">
             <head>
-                <link href="https://unpkg.com/@triply/yasgui/build/yasgui.min.css" rel="stylesheet" type="text/css" />
-                <script src="https://unpkg.com/@triply/yasgui/build/yasgui.min.js"></script>
+                <title>ld-prototype-proxy</title>
+                <link href="yasgui.min.css" rel="stylesheet" type="text/css" />
+                <script src="yasgui.min.js"></script>
                 <style>
-                    .yasgui .autocompleteWrapper {
-                    display: none !important;
-                    }
+                    .config-table { font-family: monospace; }
+                    .config-table th { text-align: end; }
+                    .yasgui .autocompleteWrapper { display: none !important; }
                 </style>
             </head>
             <body>
+                <h1>ld-prototype-proxy</h1>
+                <p>
+                    <b>config:</b> ${configPath} &nbsp 
+                    <b>endpoint:</b> ${config.endpointUrl} &nbsp 
+                    <b>default-role:</b> ${defaultRole}
+                </p>
                 <div id="yasgui"></div>
                 <script>
                     const yasgui = new Yasgui(document.getElementById("yasgui"), {
-                        requestConfig: { endpoint: "http://[${req.socket.localAddress}]:${req.socket.localPort}/sparql" },
+                        requestConfig: { endpoint: "/sparql" },
                         copyEndpointOnNewTab: false,
                     });
                 </script>
