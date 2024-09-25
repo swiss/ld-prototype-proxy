@@ -29,10 +29,15 @@
     "commander": "^12.1.0",
     "cors": "^2.8.5",
     "debug": "^4.3.5",
+    "eslint-config-standard": "^17.1.0",
     "express": "^4.19.2",
     "express-basic-auth": "^1.2.1",
     "jsonschema": "^1.4.1",
     "oxigraph": "^0.4.0-alpha.7",
     "sparql-http-client": "^3.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.11.1",
+    "globals": "^15.9.0"
   }
 }
