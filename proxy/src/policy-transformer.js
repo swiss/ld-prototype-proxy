@@ -61,6 +61,9 @@ export function stringifyPrefixes(prefixes) {
  */
 function createPolicyTree(policies) {
 
+    if (policies.length === 0)
+        return new AnyElement();
+
     let root = null;
     const order = policies.sort((a, b) => a.priority - b.priority);
 
