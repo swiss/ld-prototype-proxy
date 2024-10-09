@@ -97,5 +97,14 @@ and UPI endpoints.
    python3 serafe_sparql_query.py --queryNumber 5 --ewr_endpoint http://localhost:3000/sparql/ --upi_endpoint http://localhost:3001/sparql/
    ```
 
-   > [!NOTE]
-   > The proxy is incapable of executing federated queries.
+> [!NOTE]
+> The proxy is unable to execute federated queries.
+
+## Third-Party Libraries
+
+This project uses the following third-party libraries:
+
+### YASGUI (Yet Another SPARQL GUI)
+
+* **Repository**: [YASGUI on GitHub](https://github.com/Yasgui/Yasgui)
+* **License**: MIT License
