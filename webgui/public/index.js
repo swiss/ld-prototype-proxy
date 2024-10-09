@@ -72,3 +72,14 @@ function renderError(err) {
     div.textContent = err;
 }
 
+const ws = new WebSocket('ws://[::1]:3001/debug');
+
+ws.onopen = function() {
+    ws.send(JSON.stringify({
+        "command": "subscribe"
+    }));
+};
+
+ws.onmessage = function(msg) {
+    console.log(msg.data);
+}

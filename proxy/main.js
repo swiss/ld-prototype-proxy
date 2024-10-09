@@ -9,6 +9,7 @@ import { program } from 'commander';
 import { Validator } from 'jsonschema';
 import { IntentProcessor } from './src/intent-processor.js';
 import { PolicyProvider } from './src/policy-provider.js';
+import expressWs from 'express-ws'
 
 
 // Setup logger
@@ -83,6 +84,34 @@ app.use(cors());
 app.use(bodyParser.text());
 app.use(bodyParser.urlencoded());
 app.use(express.static('public'))
+
+
+// Setup Websocket
+
+const ws = expressWs(app);
+
+app.ws('/debug', function(ws) {
+    ws.on('message', function(msg) {
+        ws.send(msg);
+    });
+});
+
+const wss = ws.getWss('/debug')
+
+const stdoutWrite = process.stderr.write;
+let buffer = ''
+process.stderr.write = function(s) {
+    stdoutWrite.apply(process.stderr, arguments);
+    buffer += s.toString();
+    let lines = buffer.split('\n');
+    buffer = lines.pop();
+    
+    lines.forEach(line => {
+        wss.clients.forEach(client => {
+            client.send(line);
+        });
+    });
+};
 
 
 // Serve SPARQL endpoint
