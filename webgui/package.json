@@ -1,0 +1,16 @@
+{
+  "name": "webgui",
+  "version": "0.0.1",
+  "description": "Demo webapplication for ld-prototype-proxy",
+  "main": "main.js",
+  "scripts": {
+    "webgui": "node ./main.js 'http://[::1]:3000/sparql' 'http://[::1]:3001/sparql' -p 8080"
+  },
+  "author": "Alain Rohrbach (alain.rohrbach@bfh.ch)",
+  "license": "",
+  "type": "module",
+  "dependencies": {
+    "commander": "^12.1.0",
+    "express": "^4.21.1"
+  }
+}
