@@ -87,31 +87,23 @@ app.use(express.static('public'))
 
 
 // Setup Websocket
+// ! This is for demonstration purposes only !
 
 const ws = expressWs(app);
 
-app.ws('/debug', function(ws) {
-    ws.on('message', function(msg) {
+app.ws('/messages', ws => {
+    ws.on('message', msg => {
         ws.send(msg);
     });
 });
 
-const wss = ws.getWss('/debug')
+const wss = ws.getWss('/messages')
 
-const stdoutWrite = process.stderr.write;
-let buffer = ''
-process.stderr.write = function(s) {
-    stdoutWrite.apply(process.stderr, arguments);
-    buffer += s.toString();
-    let lines = buffer.split('\n');
-    buffer = lines.pop();
-    
-    lines.forEach(line => {
-        wss.clients.forEach(client => {
-            client.send(line);
-        });
+function broadcastMessage(msg) {
+    wss.clients.forEach(client => {
+        client.send(msg);
     });
-};
+}
 
 
 // Serve SPARQL endpoint
@@ -119,6 +111,7 @@ process.stderr.write = function(s) {
 app.use('/sparql', async (req, res) => {
     
     log('received new sparql request');
+    broadcastMessage(`Incoming SPARQL-Query`)
 
     // accept type must be compatible with oxigraph.
     // TODO: support additional content-types
@@ -141,21 +134,29 @@ app.use('/sparql', async (req, res) => {
         return res.status(400).send('Missing query.');
     }
     
+    log('found query %O', query);
+
     // extract user and formulate intent
     // TODO: identify role
     const user = req.auth?.user || req.headers.role || defaultRole;
     log(`identified user role: ${user}`);
-    
+    broadcastMessage(`Identified User with Role '${user}'`)
+
     const intent = { role: user, queryString: query };
+
+    broadcastMessage('Creating temporal graph...');
 
     // execute intent
     try {
         const result = await intentProcessor.process(intent);
         log('returning query results!');
         log(inspect(JSON.parse(result), { colors: true, depth: null, maxArrayLength: 5, compact: true }));
+        
+        broadcastMessage('Returning query results');
         return res.status(200).contentType('application/json').send(result);
     }
     catch (ex) {
+        broadcastMessage('Failed to execute query.')
         return res.status(400).send(ex.message);
     }
 });
