@@ -9,7 +9,6 @@ import { program } from 'commander';
 import { Validator } from 'jsonschema';
 import { IntentProcessor } from './src/intent-processor.js';
 import { PolicyProvider } from './src/policy-provider.js';
-import expressWs from 'express-ws'
 
 
 // Setup logger
@@ -86,32 +85,11 @@ app.use(bodyParser.urlencoded());
 app.use(express.static('public'))
 
 
-// Setup Websocket
-// ! This is for demonstration purposes only !
-
-const ws = expressWs(app);
-
-app.ws('/messages', ws => {
-    ws.on('message', msg => {
-        ws.send(msg);
-    });
-});
-
-const wss = ws.getWss('/messages')
-
-function broadcastMessage(msg) {
-    wss.clients.forEach(client => {
-        client.send(msg);
-    });
-}
-
-
 // Serve SPARQL endpoint
 
 app.use('/sparql', async (req, res) => {
     
     log('received new sparql request');
-    broadcastMessage(`Incoming SPARQL-Query`)
 
     // accept type must be compatible with oxigraph.
     // TODO: support additional content-types
@@ -140,11 +118,8 @@ app.use('/sparql', async (req, res) => {
     // TODO: identify role
     const user = req.auth?.user || req.headers.role || defaultRole;
     log(`identified user role: ${user}`);
-    broadcastMessage(`Identified User with Role '${user}'`)
 
     const intent = { role: user, queryString: query };
-
-    broadcastMessage('Creating temporal graph...');
 
     // execute intent
     try {
@@ -152,11 +127,9 @@ app.use('/sparql', async (req, res) => {
         log('returning query results!');
         log(inspect(JSON.parse(result), { colors: true, depth: null, maxArrayLength: 5, compact: true }));
         
-        broadcastMessage('Returning query results');
         return res.status(200).contentType('application/json').send(result);
     }
     catch (ex) {
-        broadcastMessage('Failed to execute query.')
         return res.status(400).send(ex.message);
     }
 });
