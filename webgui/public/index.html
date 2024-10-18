@@ -15,16 +15,12 @@
             <h1>Einwohner:innen ermitteln</h1>
         </div>
 
-        <div class="d-none" id="form-user">
-            <p class="card-text">We will now simulate a query as a <b>regular user</b>.</p>
-            <p>It will query proxies connected to the EWR and UPI registers and search for people living in Bern.</p>
-            <a href="./query.html?role=user" class="btn btn-primary">Execute Query</a>    
-        </div>
-
-        <div class="d-none" id="form-admin">
-            <p class="card-text">We will now simulate a query as an <b>admin user</b>.</p>
-            <p>It will query proxies connected to the EWR and UPI registers and search for people living in Bern.</p>
-            <a href="./query.html?role=admin" class="btn btn-primary">Execute Query</a>
+        <div id="form-user">
+            <p data-role="user" class="d-none">Wir wird nun eine Anfrage als <b>standart User</b> simulieren.</p>
+            <p data-role="admin" class="d-none">Wir wird nun eine Anfrage als <b>Admin User</b> simulieren.</p>
+            <p>Es werden Proxys angefragt welche an die EWR und UPI register angebunden sind und nach in Bern lebenden Personen gesucht.</p>
+            <a data-role="user" class="d-none" href="./query.html?role=user" class="btn btn-primary">Abfrage ausführen</a>    
+            <a data-role="admin" class="d-none" href="./query.html?role=admin" class="btn btn-primary">Abfrage ausführen</a>
         </div>
 
     </div>
