@@ -9,7 +9,6 @@ import { program } from 'commander';
 import { Validator } from 'jsonschema';
 import { IntentProcessor } from './src/intent-processor.js';
 import { PolicyProvider } from './src/policy-provider.js';
-import expressWs from 'express-ws'
 
 
 // Setup logger
@@ -86,34 +85,6 @@ app.use(bodyParser.urlencoded());
 app.use(express.static('public'))
 
 
-// Setup Websocket
-
-const ws = expressWs(app);
-
-app.ws('/debug', function(ws) {
-    ws.on('message', function(msg) {
-        ws.send(msg);
-    });
-});
-
-const wss = ws.getWss('/debug')
-
-const stdoutWrite = process.stderr.write;
-let buffer = ''
-process.stderr.write = function(s) {
-    stdoutWrite.apply(process.stderr, arguments);
-    buffer += s.toString();
-    let lines = buffer.split('\n');
-    buffer = lines.pop();
-    
-    lines.forEach(line => {
-        wss.clients.forEach(client => {
-            client.send(line);
-        });
-    });
-};
-
-
 // Serve SPARQL endpoint
 
 app.use('/sparql', async (req, res) => {
@@ -141,11 +112,13 @@ app.use('/sparql', async (req, res) => {
         return res.status(400).send('Missing query.');
     }
     
+    log('found query %O', query);
+
     // extract user and formulate intent
     // TODO: identify role
     const user = req.auth?.user || req.headers.role || defaultRole;
     log(`identified user role: ${user}`);
-    
+
     const intent = { role: user, queryString: query };
 
     // execute intent
@@ -153,6 +126,7 @@ app.use('/sparql', async (req, res) => {
         const result = await intentProcessor.process(intent);
         log('returning query results!');
         log(inspect(JSON.parse(result), { colors: true, depth: null, maxArrayLength: 5, compact: true }));
+        
         return res.status(200).contentType('application/json').send(result);
     }
     catch (ex) {
