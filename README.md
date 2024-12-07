@@ -1,6 +1,14 @@
 # ld-prototype-proxy
 
-## Authorization Proxy
+This repository contains an example implementation of a SPARQL proxy,
+which can be used to restrict access to any SPARQL endpoint.
+
+More information can be found at:
+
+* [Prototyp «Linked Data» natürliche Personen (Bundeskanzlei DTI)](https://www.bk.admin.ch/bk/de/home/digitale-transformation-ikt-lenkung/bundesarchitektur/stammdatenverwaltung/prototyp-linked-data.html)
+* [Dezentrale Personenstammdaten mit Linked Data (Bern University of Applied Sciences)](https://www.bfh.ch/de/forschung/forschungsprojekte/2024-385-206-909/)
+
+## Overview
 
 The following describes the structure and usage of the authorization proxy.
 
@@ -51,7 +59,7 @@ The current version of the proxy does not yet feature any authentication methods
 
 For demonstration purposes a user's role can be provided directly in the following two ways.
 
-1. By specifying a default role on start-up with the `--role` option.  
+1. By specifying a default role on start-up with the `--role` option.
    e.g. `node ../config/upi --port 3001 --role admin`
 2. By specifying the `role` header of the request.
 
@@ -73,7 +81,7 @@ and UPI endpoints.
 
 1. Start the EWR and UPI triple store servers from
    [ld-prototype-data](https://github.com/swiss/ld-prototype-data/tree/main).
-  
+
    ```shell
    cd ld-prototype-data/UC-Serafe/client-POC
    ./startEWR.sh
